@@ -20,13 +20,10 @@ import (
 // key is supi
 type UeContext struct {
 	// Ue Context
-	Supi                      string
-	Gpsi                      string
-	Pei                       string
-	GroupIds                  []string
-	PolAssociationIDGenerator uint32
-	AMPolicyData              map[string]*UeAMPolicyData // use PolAssoId(ue.Supi-numPolId) as key
-
+	Supi         string
+	Gpsi         string
+	Pei          string
+	AMPolicyData map[string]*UeAMPolicyData // use PolAssoId(ue.Supi-numPolId) as key
 	// Udr Ref
 	UdrUri string
 	// SMPolicy
@@ -41,6 +38,9 @@ type UeContext struct {
 	AppSessionIdStore           *AppSessionIdStore
 	PolicyDataSubscriptionStore *models.PolicyDataSubscription
 	PolicyDataChangeStore       *models.PolicyDataChangeNotification
+
+	GroupIds                  []string
+	PolAssociationIDGenerator uint32
 }
 
 type UeAMPolicyData struct {
@@ -48,7 +48,6 @@ type UeAMPolicyData struct {
 	AccessType        models.AccessType
 	NotificationUri   string
 	ServingPlmn       *models.NetworkId
-	AltNotifIpv4Addrs []string
 	AltNotifIpv6Addrs []string
 	// TODO: AMF Status Change
 	AmfStatusUri string
@@ -58,7 +57,6 @@ type UeAMPolicyData struct {
 	// Policy Association
 	Triggers    []models.RequestTrigger
 	ServAreaRes *models.ServiceAreaRestriction
-	Rfsp        int32
 	UserLoc     *models.UserLocation
 	TimeZone    string
 	SuppFeat    string
@@ -67,7 +65,9 @@ type UeAMPolicyData struct {
 	// related to UDR Subscription Data
 	AmPolicyData *models.AmPolicyData // Svbscription Data
 	// Corresponding UE
-	PcfUe *UeContext
+	PcfUe             *UeContext
+	AltNotifIpv4Addrs []string
+	Rfsp              int32
 }
 
 type UeSmPolicyData struct {
@@ -82,9 +82,6 @@ type UeSmPolicyData struct {
 	// SmfId                  string
 	// TraceReq *TraceData
 	// RecoveryTime     *time.Time
-	PackFiltIdGenarator int32
-	PccRuleIdGenarator  int32
-	ChargingIdGenarator int32
 	// FlowMapsToPackFiltIds  map[string][]string // use Flow Description(in TS 29214) as key map to pcc rule ids
 	PackFiltMapToPccRuleId map[string]string // use PackFiltId as Key
 	// Related to GBR
@@ -98,7 +95,10 @@ type UeSmPolicyData struct {
 	// related to AppSession
 	AppSessions map[string]bool // related appSessionId
 	// Corresponding UE
-	PcfUe *UeContext
+	PcfUe               *UeContext
+	PackFiltIdGenarator int32
+	PccRuleIdGenarator  int32
+	ChargingIdGenarator int32
 }
 
 // NewUeAMPolicyData returns created UeAMPolicyData data and insert this data to Ue.AMPolicyData with assolId as key
@@ -464,8 +464,8 @@ func (ue *UeContext) SMPolicyFindByIdentifiersIpv6(v6 string, sNssai *models.Sns
 
 // AppSessionIdStore -
 type AppSessionIdStore struct {
-	AppSessionId      string
 	AppSessionContext models.AppSessionContext
+	AppSessionId      string
 }
 
 var AppSessionContextStore []AppSessionIdStore
